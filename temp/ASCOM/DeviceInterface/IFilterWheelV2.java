@@ -1,0 +1,518 @@
+package ASCOM.DeviceInterface;
+
+/*
+
+ Defines the IFilterWheel Interface
+ 
+
+
+*/
+public class IFilterWheelV2{
+
+/*
+
+ Set True to connect to the device hardware. Set False to disconnect from the device hardware.
+ You can also read the property to check whether it is connected. This reports the current hardware state.
+ 
+
+		Must be implementedDo not use a NotConnectedException here, that exception is for use in other methods that require a connection in order to succeed.
+ The Connected property sets and reports the state of connection to the device hardware.
+ For a hub this means that Connected will be true when the first driver connects and will only be set to false
+ when all drivers have disconnected.  A second driver may find that Connected is already true and
+ setting Connected to false does not report Connected as false.  This is not an error because the physical state is that the
+ hardware connection is still true.
+		Multiple calls setting Connected to true or false will not cause an error.
+	
+*/
+private double Connected;
+/*
+
+ Returns a description of the device, such as manufacturer and modelnumber. Any ASCII characters may be used. 
+ 
+Must be implemented
+	
+*/
+private double Description;
+/*
+
+ Descriptive and version information about this ASCOM driver.
+ 
+
+		Must be implemented This string may contain line endings and may be hundreds to thousands of characters long.
+ It is intended to display detailed information on the ASCOM driver, including version and copyright data.
+ See the  property for information on the device itself.
+ To get the driver version in a parseable string, use the  property.
+ 
+*/
+private double DriverInfo;
+/*
+
+ A string containing only the major and minor version of the driver.
+ 
+Must be implemented This must be in the form "n.n".
+ It should not to be confused with the  property, which is the version of this specification supported by the 
+ driver.
+ 
+*/
+private double DriverVersion;
+/*
+
+ The interface version number that this device supports. Should return 2 for this interface version.
+ 
+Must be implemented Clients can detect legacy V1 drivers by trying to read ths property.
+ If the driver raises an error, it is a V1 driver. V1 did not specify this property. A driver may also return a value of 1. 
+ In other words, a raised error or a return value of 1 indicates that the driver is a V1 driver.
+ 
+*/
+private double InterfaceVersion;
+/*
+
+ The short name of the driver, for display purposes
+ 
+Must be implemented
+	
+*/
+private double Name;
+/*
+
+ Returns the list of action names supported by this driver.
+ 
+Must be implemented This method must return an empty arraylist if no actions are supported. Please do not throw a 
+ .
+ This is an aid to client authors and testers who would otherwise have to repeatedly poll the driver to determine its capabilities. 
+ Returned action names may be in mixed case to enhance presentation but  will be recognised case insensitively in 
+ the Action method.
+		An array list collection has been selected as the vehicle for  action names in order to make it easier for clients to
+ determine whether a particular action is supported. This is easily done through the Contains method. Since the
+ collection is also ennumerable it is easy to use constructs such as For Each ... to operate on members without having to be concerned 
+ about hom many members are in the collection. 
+		Collections have been used in the Telescope specification for a number of years and are known to be compatible with COM. Within .NET
+ the ArrayList is the correct implementation to use as the .NET Generic methods are not compatible with COM.
+	
+*/
+private double SupportedActions;
+/*
+
+ Focus offset of each filter in the wheel
+
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ For each valid slot number (from 0 to N-1), reports the focus offset for the given filter position.  These values are focuser and filter dependent, and  would usually be set up by the user via 
+ the SetupDialog. The number of slots N can be determined from the length of the array. If focuser offsets are not available, then it should report back 0 for all array values.
+ 
+*/
+private double FocusOffsets;
+/*
+
+ Name of each filter in the wheel
+
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ For each valid slot number (from 0 to N-1), reports the name given to the filter position.  These names would usually be set up by the user via the
+ SetupDialog.  The number of slots N can be determined from the length of the array.  If filter names are not available, then it should report back "Filter 1", "Filter 2", etc.
+ 
+*/
+private double Names;
+/*
+
+ Sets or returns the current filter wheel position
+ 
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ Write a position number between 0 and N-1, where N is the number of filter slots (see ). Starts filter wheel rotation immediately when written. Reading
+ the property gives current slot number (if wheel stationary) or -1 if wheel is moving. 
+ Returning a position of -1 is mandatory while the filter wheel is in motion; valid slot numbers must not be reported back while the filter wheel is rotating past filter positions.
+		Note
+		Some filter wheels are built into the camera (one driver, two interfaces).  Some cameras may not actually rotate the wheel until the exposure is triggered.  In this case, the written value is available
+ immediately as the read value, and -1 is never produced.
+	
+*/
+private double Position;
+
+
+/*
+
+ Launches a configuration dialog box for the driver.  The call will not return
+ until the user clicks OK or cancel manually.
+ 
+Must be implemented
+	
+*/
+public void SetupDialog(){
+return null;
+}
+
+
+/*
+
+ Invokes the specified device-specific action.
+ 
+Can throw a not implemented exception 
+ This method is intended for use in all current and future device types and to avoid name clashes, management of action names 
+ is important from day 1. A two-part naming convention will be adopted - DeviceType:UniqueActionName where:
+ 
+			DeviceType is the same value as would be used by  e.g. Telescope, Camera, Switch etc.
+			UniqueActionName is a single word, or multiple words joined by underscore characters, that sensibly describes the action to be performed.
+		
+		
+ It is recommended that UniqueActionNames should be a maximum of 16 characters for legibility.
+ Should the same function and UniqueActionName be supported by more than one type of device, the reserved DeviceType of 
+ “General” will be used. Action names will be case insensitive, so FilterWheel:SelectWheel, filterwheel:selectwheel 
+ and FILTERWHEEL:SELECTWHEEL will all refer to the same action.
+		The names of all supported actions must be returned in the  property.
+	
+*/
+public void Action(String,String){
+return null;
+}
+
+
+/*
+
+ Transmits an arbitrary string to the device and does not wait for a response.
+ Optionally, protocol framing characters may be added to the string before transmission.
+ 
+Can throw a not implemented exception
+	
+*/
+public void CommandBlind(String,Boolean){
+return null;
+}
+
+
+/*
+
+ Transmits an arbitrary string to the device and waits for a boolean response.
+ Optionally, protocol framing characters may be added to the string before transmission.
+ 
+Can throw a not implemented exception
+	
+*/
+public void CommandBool(String,Boolean){
+return null;
+}
+
+
+/*
+
+ Transmits an arbitrary string to the device and waits for a string response.
+ Optionally, protocol framing characters may be added to the string before transmission.
+ 
+Can throw a not implemented exception
+	
+*/
+public void CommandString(String,Boolean){
+return null;
+}
+
+
+/*
+
+ Dispose the late-bound interface, if needed. Will release it via COM
+ if it is a COM object, else if native .NET will just dereference it
+ for GC.
+ 
+
+*/
+public void Dispose(){
+return null;
+}
+
+/*
+ Sets 
+ Set True to connect to the device hardware. Set False to disconnect from the device hardware.
+ You can also read the property to check whether it is connected. This reports the current hardware state.
+ 
+
+		Must be implementedDo not use a NotConnectedException here, that exception is for use in other methods that require a connection in order to succeed.
+ The Connected property sets and reports the state of connection to the device hardware.
+ For a hub this means that Connected will be true when the first driver connects and will only be set to false
+ when all drivers have disconnected.  A second driver may find that Connected is already true and
+ setting Connected to false does not report Connected as false.  This is not an error because the physical state is that the
+ hardware connection is still true.
+		Multiple calls setting Connected to true or false will not cause an error.
+	
+*/
+public void setConnected(double _theValue){
+this.Connected=_theValue;
+}
+
+/*
+ Gets 
+ Set True to connect to the device hardware. Set False to disconnect from the device hardware.
+ You can also read the property to check whether it is connected. This reports the current hardware state.
+ 
+
+		Must be implementedDo not use a NotConnectedException here, that exception is for use in other methods that require a connection in order to succeed.
+ The Connected property sets and reports the state of connection to the device hardware.
+ For a hub this means that Connected will be true when the first driver connects and will only be set to false
+ when all drivers have disconnected.  A second driver may find that Connected is already true and
+ setting Connected to false does not report Connected as false.  This is not an error because the physical state is that the
+ hardware connection is still true.
+		Multiple calls setting Connected to true or false will not cause an error.
+	
+*/
+public double getConnected(){
+return Connected;
+}
+
+/*
+ Sets 
+ Returns a description of the device, such as manufacturer and modelnumber. Any ASCII characters may be used. 
+ 
+Must be implemented
+	
+*/
+public void setDescription(double _theValue){
+this.Description=_theValue;
+}
+
+/*
+ Gets 
+ Returns a description of the device, such as manufacturer and modelnumber. Any ASCII characters may be used. 
+ 
+Must be implemented
+	
+*/
+public double getDescription(){
+return Description;
+}
+
+/*
+ Sets 
+ Descriptive and version information about this ASCOM driver.
+ 
+
+		Must be implemented This string may contain line endings and may be hundreds to thousands of characters long.
+ It is intended to display detailed information on the ASCOM driver, including version and copyright data.
+ See the  property for information on the device itself.
+ To get the driver version in a parseable string, use the  property.
+ 
+*/
+public void setDriverInfo(double _theValue){
+this.DriverInfo=_theValue;
+}
+
+/*
+ Gets 
+ Descriptive and version information about this ASCOM driver.
+ 
+
+		Must be implemented This string may contain line endings and may be hundreds to thousands of characters long.
+ It is intended to display detailed information on the ASCOM driver, including version and copyright data.
+ See the  property for information on the device itself.
+ To get the driver version in a parseable string, use the  property.
+ 
+*/
+public double getDriverInfo(){
+return DriverInfo;
+}
+
+/*
+ Sets 
+ A string containing only the major and minor version of the driver.
+ 
+Must be implemented This must be in the form "n.n".
+ It should not to be confused with the  property, which is the version of this specification supported by the 
+ driver.
+ 
+*/
+public void setDriverVersion(double _theValue){
+this.DriverVersion=_theValue;
+}
+
+/*
+ Gets 
+ A string containing only the major and minor version of the driver.
+ 
+Must be implemented This must be in the form "n.n".
+ It should not to be confused with the  property, which is the version of this specification supported by the 
+ driver.
+ 
+*/
+public double getDriverVersion(){
+return DriverVersion;
+}
+
+/*
+ Sets 
+ The interface version number that this device supports. Should return 2 for this interface version.
+ 
+Must be implemented Clients can detect legacy V1 drivers by trying to read ths property.
+ If the driver raises an error, it is a V1 driver. V1 did not specify this property. A driver may also return a value of 1. 
+ In other words, a raised error or a return value of 1 indicates that the driver is a V1 driver.
+ 
+*/
+public void setInterfaceVersion(double _theValue){
+this.InterfaceVersion=_theValue;
+}
+
+/*
+ Gets 
+ The interface version number that this device supports. Should return 2 for this interface version.
+ 
+Must be implemented Clients can detect legacy V1 drivers by trying to read ths property.
+ If the driver raises an error, it is a V1 driver. V1 did not specify this property. A driver may also return a value of 1. 
+ In other words, a raised error or a return value of 1 indicates that the driver is a V1 driver.
+ 
+*/
+public double getInterfaceVersion(){
+return InterfaceVersion;
+}
+
+/*
+ Sets 
+ The short name of the driver, for display purposes
+ 
+Must be implemented
+	
+*/
+public void setName(double _theValue){
+this.Name=_theValue;
+}
+
+/*
+ Gets 
+ The short name of the driver, for display purposes
+ 
+Must be implemented
+	
+*/
+public double getName(){
+return Name;
+}
+
+/*
+ Sets 
+ Returns the list of action names supported by this driver.
+ 
+Must be implemented This method must return an empty arraylist if no actions are supported. Please do not throw a 
+ .
+ This is an aid to client authors and testers who would otherwise have to repeatedly poll the driver to determine its capabilities. 
+ Returned action names may be in mixed case to enhance presentation but  will be recognised case insensitively in 
+ the Action method.
+		An array list collection has been selected as the vehicle for  action names in order to make it easier for clients to
+ determine whether a particular action is supported. This is easily done through the Contains method. Since the
+ collection is also ennumerable it is easy to use constructs such as For Each ... to operate on members without having to be concerned 
+ about hom many members are in the collection. 
+		Collections have been used in the Telescope specification for a number of years and are known to be compatible with COM. Within .NET
+ the ArrayList is the correct implementation to use as the .NET Generic methods are not compatible with COM.
+	
+*/
+public void setSupportedActions(double _theValue){
+this.SupportedActions=_theValue;
+}
+
+/*
+ Gets 
+ Returns the list of action names supported by this driver.
+ 
+Must be implemented This method must return an empty arraylist if no actions are supported. Please do not throw a 
+ .
+ This is an aid to client authors and testers who would otherwise have to repeatedly poll the driver to determine its capabilities. 
+ Returned action names may be in mixed case to enhance presentation but  will be recognised case insensitively in 
+ the Action method.
+		An array list collection has been selected as the vehicle for  action names in order to make it easier for clients to
+ determine whether a particular action is supported. This is easily done through the Contains method. Since the
+ collection is also ennumerable it is easy to use constructs such as For Each ... to operate on members without having to be concerned 
+ about hom many members are in the collection. 
+		Collections have been used in the Telescope specification for a number of years and are known to be compatible with COM. Within .NET
+ the ArrayList is the correct implementation to use as the .NET Generic methods are not compatible with COM.
+	
+*/
+public double getSupportedActions(){
+return SupportedActions;
+}
+
+/*
+ Sets 
+ Focus offset of each filter in the wheel
+
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ For each valid slot number (from 0 to N-1), reports the focus offset for the given filter position.  These values are focuser and filter dependent, and  would usually be set up by the user via 
+ the SetupDialog. The number of slots N can be determined from the length of the array. If focuser offsets are not available, then it should report back 0 for all array values.
+ 
+*/
+public void setFocusOffsets(double _theValue){
+this.FocusOffsets=_theValue;
+}
+
+/*
+ Gets 
+ Focus offset of each filter in the wheel
+
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ For each valid slot number (from 0 to N-1), reports the focus offset for the given filter position.  These values are focuser and filter dependent, and  would usually be set up by the user via 
+ the SetupDialog. The number of slots N can be determined from the length of the array. If focuser offsets are not available, then it should report back 0 for all array values.
+ 
+*/
+public double getFocusOffsets(){
+return FocusOffsets;
+}
+
+/*
+ Sets 
+ Name of each filter in the wheel
+
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ For each valid slot number (from 0 to N-1), reports the name given to the filter position.  These names would usually be set up by the user via the
+ SetupDialog.  The number of slots N can be determined from the length of the array.  If filter names are not available, then it should report back "Filter 1", "Filter 2", etc.
+ 
+*/
+public void setNames(double _theValue){
+this.Names=_theValue;
+}
+
+/*
+ Gets 
+ Name of each filter in the wheel
+
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ For each valid slot number (from 0 to N-1), reports the name given to the filter position.  These names would usually be set up by the user via the
+ SetupDialog.  The number of slots N can be determined from the length of the array.  If filter names are not available, then it should report back "Filter 1", "Filter 2", etc.
+ 
+*/
+public double getNames(){
+return Names;
+}
+
+/*
+ Sets 
+ Sets or returns the current filter wheel position
+ 
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ Write a position number between 0 and N-1, where N is the number of filter slots (see ). Starts filter wheel rotation immediately when written. Reading
+ the property gives current slot number (if wheel stationary) or -1 if wheel is moving. 
+ Returning a position of -1 is mandatory while the filter wheel is in motion; valid slot numbers must not be reported back while the filter wheel is rotating past filter positions.
+		Note
+		Some filter wheels are built into the camera (one driver, two interfaces).  Some cameras may not actually rotate the wheel until the exposure is triggered.  In this case, the written value is available
+ immediately as the read value, and -1 is never produced.
+	
+*/
+public void setPosition(double _theValue){
+this.Position=_theValue;
+}
+
+/*
+ Gets 
+ Sets or returns the current filter wheel position
+ 
+
+		Must be implemented, must not throw a PropertyNotImplementedException.
+ Write a position number between 0 and N-1, where N is the number of filter slots (see ). Starts filter wheel rotation immediately when written. Reading
+ the property gives current slot number (if wheel stationary) or -1 if wheel is moving. 
+ Returning a position of -1 is mandatory while the filter wheel is in motion; valid slot numbers must not be reported back while the filter wheel is rotating past filter positions.
+		Note
+		Some filter wheels are built into the camera (one driver, two interfaces).  Some cameras may not actually rotate the wheel until the exposure is triggered.  In this case, the written value is available
+ immediately as the read value, and -1 is never produced.
+	
+*/
+public double getPosition(){
+return Position;
+}
+}
